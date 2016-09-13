@@ -1,0 +1,369 @@
+DTL
+
+Imports System.Data.SqlClient
+Public Class dtlArticulos
+    Public Shared Function obtenerRegistro(ByRef miconn As SqlConnection, ByVal lngIdArticulo As Integer, ByRef tr As SqlTransaction) As DataSet
+
+        Dim command As SqlCommand
+        Dim adapter As SqlDataAdapter
+        Dim ds As New DataSet
+        Try
+
+            command = New SqlCommand()
+            command.Transaction = tr
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "Articulos_obtenerRegistro"
+            command.Parameters.Add(New SqlParameter("@art_id", lngIdArticulo))
+            adapter = New SqlDataAdapter()
+            adapter.SelectCommand = command
+            adapter.SelectCommand.Connection = miconn
+
+            adapter.Fill(ds)
+
+            obtenerRegistro = ds
+
+        Catch ex As Exception
+            Throw New Exception("Error en DTL" + "dtlArticulos_ObtenerRegistro" + "|" + ex.Message)
+        End Try
+    End Function
+    Public Shared Function insertarRegistro(ByRef miConn As SqlConnection, ByVal dstArticulo As DataSet, ByRef tr As SqlTransaction) As Long
+        'Recupera un articulo de la base y lo guarda en un dataset 
+        Dim command As New SqlCommand
+        Dim objField As DataColumn
+        Dim par As SqlParameter
+        Try
+            ' Hacer recorrido de la coleccion de parametros y ejecutar el SP
+            For Each objField In dstArticulo.Tables(0).Columns
+                par = New SqlParameter(objField.ColumnName, dstArticulo.Tables(0).Rows(0).Item(objField.Ordinal)) 'objField.MaxLength)
+                'par.Value = IIf(Not IsNothing(dsarticulos.Tables(0).Rows(0).Item(objField.Ordinal)), dsarticulos.Tables(0).Rows(0).Item(objField.Ordinal), System.DBNull.Value)
+                ' GetDBType(objField.DataType),
+                command.Parameters.Add(par)
+
+            Next objField
+            command.Connection = miConn
+            command.Transaction = tr
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "Articulos_insertarRegistro"
+            insertarRegistro = command.ExecuteScalar
+        Catch ex As Exception
+            Throw New Exception("Error en DTL" + "Articulos_insertarRegistro" + "|" + ex.Message)
+        End Try
+
+    End Function
+
+ 
+   
+    Public Shared Function actualizarRegistro(ByRef miConn As SqlConnection, ByVal dstArticulo As DataSet, ByRef tr As SqlTransaction) As Long
+        'Recupera un articulo de la base y lo guarda en un dataset 
+        Dim command As New SqlCommand
+        Dim objField As DataColumn
+        Dim par As SqlParameter
+        Try
+            ' Hacer recorrido de la coleccion de parametros y ejecutar el SP
+            For Each objField In dstArticulo.Tables(0).Columns
+                par = New SqlParameter(objField.ColumnName, dstArticulo.Tables(0).Rows(0).Item(objField.Ordinal)) 'objField.MaxLength)
+                'par.Value = IIf(Not IsNothing(dsarticulos.Tables(0).Rows(0).Item(objField.Ordinal)), dsarticulos.Tables(0).Rows(0).Item(objField.Ordinal), System.DBNull.Value)
+                ' GetDBType(objField.DataType),
+                command.Parameters.Add(par)
+
+            Next objField
+            command.Connection = miConn
+            command.Transaction = tr
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "Articulos_actualizarRegistro"
+            actualizarRegistro = command.ExecuteScalar
+        Catch ex As Exception
+            Throw New Exception("Error en DTL" + "Articulos_actualizarRegistro" + "|" + ex.Message)
+        End Try
+    End Function
+
+    
+
+    Public Shared Function eliminarRegistro(ByRef miConn As SqlConnection, ByVal lngIdArticulo As Integer, ByRef tr As SqlTransaction) As Boolean
+        'Recupera un articulo de la base y lo guarda en un dataset 
+        Dim command As New SqlCommand
+        Dim objField As DataColumn
+        Dim par As SqlParameter
+        Try
+
+            command.Connection = miConn
+            command.Transaction = tr
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "Articulos_eliminarRegistro"
+            command.Parameters.Add(New SqlParameter("@art_id", lngIdArticulo))
+            eliminarRegistro = command.ExecuteScalar
+        Catch ex As Exception
+            Throw New Exception("Error en DTL" + "Articulos_insertarRegistro" + "|" + ex.Message)
+        End Try
+
+    End Function
+
+    Public Shared Function obtenerLista(ByRef miconn As SqlConnection, ByRef tr As SqlTransaction) As DataSet
+
+        Dim command As SqlCommand
+        Dim adapter As SqlDataAdapter
+        Dim ds As New DataSet
+        Try
+
+            command = New SqlCommand()
+            command.Transaction = tr
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "Articulos_obtenerLista"
+            adapter = New SqlDataAdapter()
+            adapter.SelectCommand = command
+            adapter.SelectCommand.Connection = miconn
+            adapter.Fill(ds)
+            obtenerLista = ds
+
+        Catch ex As Exception
+            Throw New Exception("Error en DTL" + "dtlArticulos_ObtenerLista" + "|" + ex.Message)
+        End Try
+    End Function
+End Class
+BRL
+Imports System.Data.SqlClient
+Imports dtlFacturacion
+Public Class brlArticulos
+    Public Shared Function obtenerRegistro(miConn As SqlConnection, lngIdArticulo As Integer, tr As SqlTransaction) As DataSet
+        Try
+            Return dtlArticulos.obtenerRegistro(miConn, lngIdArticulo, tr)
+        Catch ex As Exception
+            Throw New Exception("Error en BRL" + "obtener Articulo" + "|" + ex.Message)
+        End Try
+    End Function
+       
+    Public Shared Function obtenerLista(miConn As SqlConnection, tr As SqlTransaction) As DataSet
+        Try
+            Return dtlArticulos.obtenerLista(miConn, tr)
+        Catch ex As Exception
+            Throw New Exception("Error en BRL" + "obtener Lista" + "|" + ex.Message)
+        End Try
+    End Function
+    Public Shared Function insertarRegistro(miConn As SqlConnection, ByVal dstArticulo As DataSet, tr As SqlTransaction) As Integer
+        Try
+            Return dtlArticulos.insertarRegistro(miConn, dstArticulo, tr)
+        Catch ex As Exception
+            Throw New Exception("Error en BRL" + "Insertar Articulo" + "|" + ex.Message)
+        End Try
+    End Function
+
+    Public Shared Function actualizarRegistro(miConn As SqlConnection, ByVal dstArticulo As DataSet, tr As SqlTransaction) As Integer
+        Try
+            Return dtlArticulos.actualizarRegistro(miConn, dstArticulo, tr)
+        Catch ex As Exception
+            Throw New Exception("Error en BRL" + "Actualizar Articulo" + "|" + ex.Message)
+        End Try
+    End Function
+
+    Public Shared Function eliminarArticulo(miconn As SqlConnection, ByVal lngIdArticulo As Integer, ByVal tr As SqlTransaction) As Boolean
+        Try
+
+            eliminarArticulo = dtlArticulos.eliminarRegistro(miconn, lngIdArticulo, tr)
+        Catch ex As Exception
+            Throw New Exception("Error en BRL" + "Obtener Articulo" + "|" + ex.Message)
+        End Try
+    End Function
+End Class
+
+WFL
+
+
+Imports System.Data.SqlClient
+Imports System.Windows.Forms
+Imports brlFacturacion
+Public Class wflArticulos
+       Public Shared Function wflArticulos_Articulos_obtenerRegistro(ByVal cadena As String, lngIdArticulo As Integer) As DataSet
+        Dim miConn As New SqlConnection
+        Dim tr As SqlTransaction = Nothing
+
+        Try
+
+            miConn.ConnectionString = cadena
+            miConn.Open()
+
+            Return brlArticulos.obtenerRegistro(miConn, lngIdArticulo, tr)
+
+            miConn.Close()
+
+        Catch ex As Exception
+            Throw New Exception("Error en WFL" + "wflArticulos_ObtenerLista" + "|" + ex.Message)
+        End Try
+    End Function
+    Public Shared Function wflArticulos_Articulos_obtenerRegistro(ByVal cadena As String, strCodigoBarras As String) As DataSet
+        Dim miConn As New SqlConnection
+        Dim tr As SqlTransaction = Nothing
+
+        Try
+
+            miConn.ConnectionString = cadena
+            miConn.Open()
+
+            Return brlArticulos.obtenerRegistro(miConn, strCodigoBarras, tr)
+
+            miConn.Close()
+
+        Catch ex As Exception
+            Throw New Exception("Error en WFL" + "wflArticulos_ObtenerRegistro" + "|" + ex.Message)
+        End Try
+    End Function
+ 
+
+    Public Shared Function wflArticulos_Articulos_obtenerLista(ByVal cadena As String) As DataSet
+        Dim miConn As New SqlConnection
+        Dim tr As SqlTransaction = Nothing
+
+        Try
+
+            miConn.ConnectionString = cadena
+            miConn.Open()
+
+            Return brlArticulos.obtenerLista(miConn, tr)
+
+            miConn.Close()
+
+        Catch ex As Exception
+            Throw New Exception("Error en WFL" + "wflArticulos_ObtenerLista" + "|" + ex.Message)
+        End Try
+    End Function
+
+    Public Shared Function wflArticulos_GuardarArticuloNuevo(ByVal cadena As String,
+                                                            strCodBarras As String,
+                                                             strCodigoPropio As String,
+                                                             strCodigoProv As String,
+                                                             strDescripcion As String,
+                                                 lngIdCategoria As Integer,
+                                                 lngIdProveedor As Integer,
+                                                 lngIdTalle As Integer,
+                                                 strActivo As String,
+                                                 lngSigno As Integer,
+                                                 GrillaPrecios As DataGridView,
+                                                 lngidUsuario As Integer) As Boolean
+        Dim miConn As New SqlConnection
+        Dim tr As SqlTransaction = Nothing
+        Dim dstArticulo As New DataSet
+        Dim lngIdArticulo As Integer
+        Dim dstListaPrecios As New DataSet
+        Try
+
+            miConn.ConnectionString = cadena
+            miConn.Open()
+            tr = miConn.BeginTransaction
+
+            '-----Obtengo un articulo vacio para completarlo-------------------
+            dstArticulo = brlArticulos.obtenerRegistro(miConn, -1, tr)
+            dstArticulo.Tables(0).Rows.Add()
+            dstArticulo.Tables(0).Rows(0)("art_id") = -1
+            dstArticulo.Tables(0).Rows(0)("art_descripcion") = strDescripcion
+            dstArticulo.Tables(0).Rows(0)("art_codigobarras") = strCodBarras
+            dstArticulo.Tables(0).Rows(0)("art_codigopropio") = strCodigoPropio
+            dstArticulo.Tables(0).Rows(0)("art_codigoprov") = strCodigoProv
+            dstArticulo.Tables(0).Rows(0)("art_idtalle") = lngIdTalle
+            dstArticulo.Tables(0).Rows(0)("art_idproveedor") = lngIdProveedor
+            dstArticulo.Tables(0).Rows(0)("art_idCategoria") = lngIdCategoria
+            dstArticulo.Tables(0).Rows(0)("art_signo") = lngSigno
+            dstArticulo.Tables(0).Rows(0)("art_activo") = strActivo
+            'dstArticulo.Tables(0).Rows(0)("art_imagen") = strimagen
+            ' Inserto el articulo en la tabla
+            lngIdArticulo = brlArticulos.insertarRegistro(miConn, dstArticulo, tr)
+            'Ahora trabajo con la lista de precios
+            '-------------------------------------------------------------------------
+            For Each row As DataGridViewRow In GrillaPrecios.Rows
+                If Not IsNothing(row.Cells("idlista").Value) Then
+                    dstListaPrecios = brlListaPreciosDet.obtenerRegistro(miConn, -1, -1, tr)
+                    dstListaPrecios.Tables(0).Rows.Add()
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_lpr_id") = row.Cells("idlista").Value
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_art_codart") = lngIdArticulo
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_precioC") = row.Cells("preciocosto").Value
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_porcutil") = row.Cells("porcutil").Value
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_utilidad") = row.Cells("montoutil").Value
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_precioVta") = row.Cells("precioventa").Value
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_fecModiPr") = row.Cells("fechamodi").Value
+                    dstListaPrecios.Tables(0).Rows(0)("lpd_idusuario") = lngidUsuario
+                    brlListaPreciosDet.actualizarRegistro(miConn, dstListaPrecios, tr)
+                End If
+
+            Next
+
+            wflArticulos_GuardarArticuloNuevo = True
+            tr.Commit()
+            miConn.Close()
+
+        Catch ex As Exception
+            tr.Rollback()
+            miConn.Close()
+            Throw New Exception("Error en WFL" + "wflArticulos_GuardarArticuloNuevo" + "|" + ex.Message)
+        End Try
+    End Function
+
+    Public Shared Function wflArticulos_ModificarArticulo(ByVal cadena As String,
+                                                          lngidArticulo As Integer,
+                                                           strCodBarras As String,
+                                                           strCodigoPropio As String,
+                                                          strCodigoProv As String,
+                                                          strDescripcion As String,
+                                                 lngIdCategoria As Integer,
+                                                 lngIdProveedor As Integer,
+                                                 lngIdTalle As Integer,
+                                                 strActivo As String,
+                                                 lngSigno As Integer,
+                                                 GrillaPrecios As DataGridView,
+                                                 lngidUsuario As Integer
+                                                 ) As Boolean
+        Dim miConn As New SqlConnection
+        Dim tr As SqlTransaction = Nothing
+        Dim dstArticulo As New DataSet
+        Dim dstListaPrecios As New DataSet
+        Try
+
+            miConn.ConnectionString = cadena
+            miConn.Open()
+            tr = miConn.BeginTransaction
+
+            '-----Obtengo un articulo vacio para completarlo-------------------
+            dstArticulo = brlArticulos.obtenerRegistro(miConn, lngidArticulo, tr)
+            dstArticulo.Tables(0).Rows(0)("art_descripcion") = strDescripcion
+            dstArticulo.Tables(0).Rows(0)("art_codigobarras") = strCodBarras
+            dstArticulo.Tables(0).Rows(0)("art_codigopropio") = strCodigoPropio
+            dstArticulo.Tables(0).Rows(0)("art_codigoprov") = strCodigoProv
+            dstArticulo.Tables(0).Rows(0)("art_idtalle") = lngIdTalle
+            dstArticulo.Tables(0).Rows(0)("art_idproveedor") = lngIdProveedor
+            dstArticulo.Tables(0).Rows(0)("art_idCategoria") = lngIdCategoria
+            dstArticulo.Tables(0).Rows(0)("art_signo") = lngSigno
+            dstArticulo.Tables(0).Rows(0)("art_activo") = strActivo
+            'dstArticulo.Tables(0).Rows(0)("art_imagen") = strimagen
+            ' Inserto el articulo en la tabla
+            brlArticulos.actualizarRegistro(miConn, dstArticulo, tr)
+
+            wflArticulos_ModificarArticulo = True
+            tr.Commit()
+            miConn.Close()
+
+        Catch ex As Exception
+            tr.Rollback()
+            miConn.Close()
+            Throw New Exception("Error en WFL" + "wflArticulos_GuardarArticuloNuevo" + "|" + ex.Message)
+        End Try
+    End Function
+
+    Public Shared Function eliminarArticulo(ByVal cadena As String, ByVal lngIdArticulo As Long) As Boolean
+        Dim miConn As New SqlConnection
+        Dim tr As SqlTransaction = Nothing
+        Try
+
+            miConn.ConnectionString = cadena
+            miConn.Open()
+            tr = miConn.BeginTransaction
+            eliminarArticulo = brlArticulos.eliminarArticulo(miConn, lngIdArticulo, tr)
+
+            tr.Commit()
+            miConn.Close()
+
+        Catch ex As Exception
+            tr.Rollback()
+            miConn.Close()
+            Throw New Exception("Error en WFL" + "wflArticulos_EliminarArticulo" + "|" + ex.Message)
+        End Try
+    End Function
+
+  
+End Class
